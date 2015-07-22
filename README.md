@@ -88,10 +88,12 @@ var someOtherNucModule = require('./someModule2');
 var Child = React.createClass({
     mixins: [nuclearMixin],
 
-    // you can omit those to simply have access to the reactor in the context
-    getDataBindings: {
-        foo: someNuclearModule.getters.meh,
-        bar: someOtherNucModule.getters.whatever
+    // you can omit this to simply have access to the reactor in the context
+    getDataBindings: function() {
+        return {
+            foo: someNuclearModule.getters.meh,
+            bar: someOtherNucModule.getters.whatever
+        };
     },
 
     render: function() {
