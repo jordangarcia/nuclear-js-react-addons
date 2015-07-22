@@ -47,7 +47,7 @@ module.exports = {
       return
     }
     var component = this
-    component.__unwatchFns = []
+    component.__nuclearUnwatchFns = []
     each(this.getDataBindings(), function(getter, key) {
       var unwatchFn = component.context.reactor.observe(getter, function(val) {
         var newState = {}
@@ -55,13 +55,16 @@ module.exports = {
         component.setState(newState)
       })
 
-      component.__unwatchFns.push(unwatchFn)
+      component.__nuclearUnwatchFns.push(unwatchFn)
     })
   },
 
   componentWillUnmount: function() {
-    while (this.__unwatchFns.length) {
-      this.__unwatchFns.shift()()
+    if (!this.__nuclearUnwatchFns) {
+      return
+    }
+    while (this.__nuclearUnwatchFns.length) {
+      this.__nuclearUnwatchFns.shift()()
     }
   },
 }

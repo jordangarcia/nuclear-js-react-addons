@@ -74,7 +74,7 @@ describe('react mixin', () => {
       evaluateCalls.should.equal(2)
       observeCalls.should.equal(2)
       unwatchCalls.should.equal(0)
-      component.__unwatchFns.length.should.equal(2)
+      component.__nuclearUnwatchFns.length.should.equal(2)
     })
 
     it('should properly unwatch when unmounting', () => {
@@ -82,7 +82,28 @@ describe('react mixin', () => {
       evaluateCalls.should.equal(2)
       observeCalls.should.equal(2)
       unwatchCalls.should.equal(2)
-      component.__unwatchFns.length.should.equal(0)
+      component.__nuclearUnwatchFns.length.should.equal(0)
     })
+  })
+
+  it('should not throw when unmounting if no dataBindings', () => {
+    const div = document.createElement('div')
+
+    const fakeReactor = {
+      foo: 'bar',
+    }
+
+    let NoBindings = React.createClass({
+      mixins: [nuclearMixin],
+
+      render() {
+        return <div/>
+      },
+    })
+
+    NoBindings = provideReactor(NoBindings)
+
+    React.render(<NoBindings reactor={fakeReactor}/>, div)
+    React.unmountComponentAtNode(div)
   })
 })

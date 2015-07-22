@@ -139,4 +139,23 @@ describe('nuclear component', () => {
     wrappedChild2.context.reactor.should.equal(fakeReactor)
     innerChild2.props.reactor.should.equal(fakeReactor)
   })
+
+  it('should not throw when unmounting if no dataBindings', () => {
+    const div = document.createElement('div')
+
+    const fakeReactor = {
+      foo: 'bar',
+    }
+
+    @provideReactor
+    @nuclearComponent
+    class NoBindings extends Component {
+      render() {
+        return <div/>
+      }
+    }
+
+    React.render(<NoBindings reactor={fakeReactor}/>, div)
+    React.unmountComponentAtNode(div)
+  })
 })
