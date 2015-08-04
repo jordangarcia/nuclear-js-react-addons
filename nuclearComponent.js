@@ -42,7 +42,7 @@ function createComponent(Component, dataBindings) {
       return getState(this.context.reactor, dataBindings)
     },
 
-    componentDidMount: function() {
+    componentWillMount: function() {
       if (!dataBindings) {
         return
       }
