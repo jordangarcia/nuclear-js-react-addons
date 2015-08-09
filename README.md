@@ -2,6 +2,26 @@
 
 Addons to quickly help you start up with [React](https://github.com/facebook/react) using [NuclearJS](https://github.com/optimizely/nuclear-js)
 
+## Why ?
+
+Right now the last version of NuclearJS (1.1.1) works server side, but is not truly compatible.
+
+The problem lies in the way the reactor is used with the mixin and the suggested architecture. They are simply not useable server side because all are reliant on a singleton reactor, which would mean that different requests server side would share state.
+
+The proposed solution is simple:
+  * actions receive the reactor instead of requiring a singleton
+  * mixin "receives" the reactor instead of being created with a singleton
+
+Which means that we need a way to pass the reactor around. That way is react context.
+
+So, we use provideReactor to provide the reactor through your rendering tree via react context.
+
+And then you use the nuclearMixin or nuclearComponent that internally use the reactor attached to the context to operate on this reactor.
+
+All that remains is creating a reactor client side (one time) and pass it around, and creating a reactor server side (each requests) and pass it around.
+
+See [documentation](#documentation) and [examples](#examples) to see how to use (you can off course roll your own provideReactor, it's just a basic Higher Order Component helper to inject context).
+
 ## Install
 
 `npm install nuclear-js-react-addons`
@@ -23,6 +43,8 @@ import {
     nuclearComponent
 } from 'nuclear-js-react-addons';
 ```
+
+## Documentation
 
 ### provideReactor
 
