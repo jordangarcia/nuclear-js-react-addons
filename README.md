@@ -213,6 +213,6 @@ Inspired/adapted from
 
   * [gaearon/redux](https://github.com/gaearon/redux)
 
-  * [yahoo/fluxible-addons-react](https://github.com/gaearon/redux)
+  * [yahoo/fluxible-addons-react](https://github.com/yahoo/fluxible-addons-react)
 
 Thanks to those for the help.
