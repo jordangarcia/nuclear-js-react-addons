@@ -31,9 +31,13 @@ function createComponent(Component, dataBindings) {
   var NuclearComponent = React.createClass({
     displayName: 'NuclearComponent(' + componentName + ')',
 
-    contextTypes: {
-      reactor: React.PropTypes.object.isRequired,
+    getDefaultProps: function() {
+      return objectAssign({}, Component.defaultProps)
     },
+
+    contextTypes: objectAssign({
+      reactor: React.PropTypes.object.isRequired
+    }, Component.contextTypes),
 
     getInitialState: function() {
       if (!dataBindings) {
