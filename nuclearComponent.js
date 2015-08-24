@@ -25,7 +25,7 @@ function getState(reactor, data) {
   return state
 }
 
-function createComponent(Component, dataBindings) {
+function createComponent(Component, getDataBindings) {
   var componentName = Component.displayName || Component.name
 
   var NuclearComponent = React.createClass({
@@ -36,19 +36,19 @@ function createComponent(Component, dataBindings) {
     },
 
     getInitialState: function() {
-      if (!dataBindings) {
+      if (!getDataBindings) {
         return null
       }
-      return getState(this.context.reactor, dataBindings)
+      return getState(this.context.reactor, getDataBindings(this.props))
     },
 
     componentDidMount: function() {
-      if (!dataBindings) {
+      if (!getDataBindings) {
         return
       }
       var component = this
       component.__nuclearUnwatchFns = []
-      each(dataBindings, function(getter, key) {
+      each(getDataBindings(this.props), function(getter, key) {
         var unwatchFn = component.context.reactor.observe(getter, function(val) {
           var newState = {}
           newState[key] = val
@@ -83,13 +83,13 @@ function createComponent(Component, dataBindings) {
  * as props to wrapped component
  *
  * Example:
- *   var WrappedComponent = nuclearComponent(Component, {
- *     counter: 'counter'
- *   });
+ *   var WrappedComponent = nuclearComponent(Component, function(props) {
+ *     return { counter: 'counter' };
+ *   );
  *
  * Also supports the decorator pattern:
- *   @nuclearComponent({
- *     counter: 'counter'
+ *   @nuclearComponent((props) => {
+ *     return { counter: 'counter' }
  *   })
  *   class BaseComponent extends React.Component {
  *     render() {
@@ -100,15 +100,16 @@ function createComponent(Component, dataBindings) {
  *
  * @method nuclearComponent
  * @param {React.Component} [Component] component to wrap
- * @param {object} dataBindings dataBindings to listen to data change
+ * @param {Function} getDataBindings function which returns dataBindings to listen for data change
  * @returns {React.Component|Function} returns function if using decorator pattern
  */
-module.exports = function nuclearComponent(Component, dataBindings) {
+module.exports = function nuclearComponent(Component, getDataBindings) {
   // support decorator pattern
-  if (arguments.length === 0 || typeof arguments[0] !== 'function') {
-    dataBindings = arguments[0]
+  // detect all React Components because they have a render method
+  if (arguments.length === 0 || !Component.prototype.render) {
+    // Component here is the getDataBindings Function
     return function connectToData(ComponentToDecorate) {
-      return createComponent(ComponentToDecorate, dataBindings)
+      return createComponent(ComponentToDecorate, Component)
     }
   }
 

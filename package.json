@@ -6,7 +6,7 @@
   "scripts": {
     "build": "scripts/build.sh",
     "prepublish": "npm run build",
-    "test": "eslint --ignore-pattern test.bundle.js . && mocha --compilers js:babel/register",
+    "test": "eslint . && mocha --compilers js:babel/register",
     "watch": "npm test -- --watch --reporter=min",
     "browser-tests": "webpack-dev-server --config webpack.test.config.js --inline"
   },
@@ -37,19 +37,19 @@
     "object-assign": "*"
   },
   "devDependencies": {
-    "babel": "^5.6.14",
-    "babel-core": "^5.7.1",
-    "babel-eslint": "^3.1.23",
+    "babel": "^5.8.21",
+    "babel-core": "^5.8.22",
+    "babel-eslint": "^4.0.10",
     "babel-loader": "^5.3.2",
-    "eslint": "^0.24.1",
-    "eslint-plugin-react": "^2.7.0",
-    "jsdom": "^5.6.0",
+    "eslint": "^1.2.1",
+    "eslint-plugin-react": "^3.2.3",
+    "jsdom": "^6.1.0",
     "mocha": "^2.2.5",
     "mocha-jsdom": "^1.0.0",
     "node-libs-browser": "^0.5.2",
     "react": ">=0.13.x",
-    "should": "^7.0.2",
-    "webpack": "^1.10.1",
+    "should": "^7.0.4",
+    "webpack": "^1.11.0",
     "webpack-dev-server": "^1.10.1"
   }
 }

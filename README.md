@@ -144,9 +144,11 @@ Example using the decorator pattern:
 import { getters } from './someModule';
 import { nuclearComponent } from 'nuclear-js-react-addons';
 
-@nuclearComponent({
-    foo: getters.meh,
-    bar: getters.haha
+@nuclearComponent((props) => {
+    return {
+        foo: getters.meh,
+        bar: getters.haha
+    };
 })
 class Child extends React.Component {
     render() {
@@ -190,9 +192,11 @@ var Child = React.createClass({
     }
 });
 
-nuclearModule.exports = nuclearComponent(Child, {
-    foo: nuclearModule.getters.meh,
-    bar: nuclearModule.getters.haha
+nuclearModule.exports = nuclearComponent(Child, function(props) {
+    return {
+        foo: nuclearModule.getters.meh,
+        bar: nuclearModule.getters.haha
+    };
 });
 ```
 
