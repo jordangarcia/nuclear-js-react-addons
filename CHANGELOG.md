@@ -1,3 +1,8 @@
+## 0.3.0 (December 22, 2015)
+
+ - BREAKING CHANGE: `provideReactor` is deprecated in favor of a `Provider` component
+ - BREAKING CHANGE: `nuclearComponent` renamed to `connect`, now a higher order function that returns a Higher Order Component.  Usage as a decorator remains the same.
+
 ## 0.2.0 (September 14, 2015)
 
  - BREAKING CHANGE: nuclearComponent API matches nuclearMixin API for getDataBindings

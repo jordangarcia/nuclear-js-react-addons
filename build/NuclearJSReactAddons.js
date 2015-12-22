@@ -62,93 +62,148 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports.provideReactor = __webpack_require__(2)
+	'use strict';
 
-	exports.nuclearMixin = __webpack_require__(6)
+	exports.__esModule = true;
 
-	exports.nuclearComponent = __webpack_require__(7)
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+	var _srcConnect = __webpack_require__(2);
+
+	var _srcConnect2 = _interopRequireDefault(_srcConnect);
+
+	var _srcProvider = __webpack_require__(6);
+
+	var _srcProvider2 = _interopRequireDefault(_srcProvider);
+
+	exports['default'] = {
+	  connect: _srcConnect2['default'],
+	  Provider: _srcProvider2['default']
+	};
+	module.exports = exports['default'];
 
 /***/ },
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(3)
-	var hoistNonReactStatics = __webpack_require__(4)
-	var objectAssign = __webpack_require__(5)
+	'use strict';
 
-	function createComponent(Component, additionalContextTypes) {
-	  var componentName = Component.displayName || Component.name
-	  var childContextTypes = objectAssign({
-	    reactor: React.PropTypes.object.isRequired,
-	  }, additionalContextTypes || {})
+	exports.__esModule = true;
 
-	  var ReactorProvider = React.createClass({
-	    displayName: 'ReactorProvider(' + componentName + ')',
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	    propTypes: {
-	      reactor: React.PropTypes.object.isRequired,
-	    },
+	exports['default'] = connect;
 
-	    childContextTypes: childContextTypes,
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	    getChildContext: function() {
-	      var childContext = {
-	        reactor: this.props.reactor,
-	      }
-	      if (additionalContextTypes) {
-	        Object.keys(additionalContextTypes).forEach(function(key) {
-	          childContext[key] = this.props[key]
-	        }, this)
-	      }
-	      return childContext
-	    },
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	    render: function() {
-	      return React.createElement(Component, this.props)
-	    },
-	  })
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	  hoistNonReactStatics(ReactorProvider, Component)
+	var _react = __webpack_require__(3);
 
-	  return ReactorProvider
+	var _reactorShape = __webpack_require__(4);
+
+	var _reactorShape2 = _interopRequireDefault(_reactorShape);
+
+	var _hoistNonReactStatics = __webpack_require__(5);
+
+	var _hoistNonReactStatics2 = _interopRequireDefault(_hoistNonReactStatics);
+
+	function getDisplayName(WrappedComponent) {
+	  return WrappedComponent.displayName || WrappedComponent.name || 'Component';
 	}
 
-	/**
-	 * Provides reactor prop to all children as React context
-	 *
-	 * Example:
-	 *   var WrappedComponent = provideReactor(Component, {
-	 *     foo: React.PropTypes.string
-	 *   });
-	 *
-	 * Also supports the decorator pattern:
-	 *   @provideReactor({
-	 *     foo: React.PropTypes.string
-	 *   })
-	 *   class BaseComponent extends React.Component {
-	 *     render() {
-	 *       return <div/>;
-	 *     }
-	 *   }
-	 *
-	 * @method provideReactor
-	 * @param {React.Component} [Component] component to wrap
-	 * @param {object} additionalContextTypes Additional contextTypes to add
-	 * @returns {React.Component|Function} returns function if using decorator pattern
-	 */
-	module.exports = function provideReactor(Component, additionalContextTypes) {
-	  // support decorator pattern
-	  if (arguments.length === 0 || typeof arguments[0] !== 'function') {
-	    additionalContextTypes = arguments[0]
-	    return function connectToReactorDecorator(ComponentToDecorate) {
-	      return createComponent(ComponentToDecorate, additionalContextTypes)
-	    }
-	  }
+	function connect(mapStateToProps) {
+	  return function wrapWithConnect(WrappedComponent) {
+	    var Connect = (function (_Component) {
+	      _inherits(Connect, _Component);
 
-	  return createComponent.apply(null, arguments)
+	      function Connect(props, context) {
+	        _classCallCheck(this, Connect);
+
+	        _Component.call(this, props, context);
+	        this.reactor = props.reactor || context.reactor;
+
+	        this.unsubscribeFns = [];
+	      }
+
+	      Connect.prototype.componentWillMount = function componentWillMount() {
+	        this.subscribe(this.props);
+	      };
+
+	      Connect.prototype.componentWillUnmount = function componentWillUnmount() {
+	        this.unsubscribe();
+	      };
+
+	      Connect.prototype.componentWillReceiveProps = function componentWillReceiveProps(nextProps) {
+	        this.subscribe(nextProps);
+	      };
+
+	      Connect.prototype.subscribe = function subscribe(props) {
+	        var _this = this;
+
+	        this.unsubscribe();
+	        if (!mapStateToProps) {
+	          return;
+	        }
+
+	        var propMap = mapStateToProps(props);
+	        var stateToSet = {};
+
+	        var _loop = function (key) {
+	          var getter = propMap[key];
+	          var unsubscribeFn = _this.reactor.observe(getter, function (val) {
+	            var _setState;
+
+	            _this.setState((_setState = {}, _setState[key] = val, _setState));
+	          });
+
+	          _this.unsubscribeFns.push(unsubscribeFn);
+
+	          stateToSet[key] = _this.reactor.evaluate(getter);
+	        };
+
+	        for (var key in propMap) {
+	          _loop(key);
+	        }
+
+	        this.setState(stateToSet);
+	      };
+
+	      Connect.prototype.unsubscribe = function unsubscribe() {
+	        if (this.unsubscribeFns.length === 0) {
+	          return;
+	        }
+
+	        while (this.unsubscribeFns.length > 0) {
+	          this.unsubscribeFns.shift()();
+	        }
+	      };
+
+	      Connect.prototype.render = function render() {
+	        return _react.createElement(WrappedComponent, _extends({
+	          reactor: this.reactor
+	        }, this.props, this.state));
+	      };
+
+	      return Connect;
+	    })(_react.Component);
+
+	    Connect.displayName = 'Connect(' + getDisplayName(WrappedComponent) + ')';
+	    Connect.WrappedComponent = WrappedComponent;
+	    Connect.contextTypes = {
+	      reactor: _reactorShape2['default']
+	    };
+	    Connect.propTypes = {
+	      reactor: _reactorShape2['default']
+	    };
+
+	    return _hoistNonReactStatics2['default'](Connect, WrappedComponent);
+	  };
 	}
 
+	module.exports = exports['default'];
 
 /***/ },
 /* 3 */
@@ -158,6 +213,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	exports.__esModule = true;
+
+	var _react = __webpack_require__(3);
+
+	exports['default'] = _react.PropTypes.shape({
+	  dispatch: _react.PropTypes.func.isRequired,
+	  evaluate: _react.PropTypes.func.isRequired,
+	  evaluateToJS: _react.PropTypes.func.isRequired,
+	  observe: _react.PropTypes.func.isRequired
+	});
+	module.exports = exports['default'];
+
+/***/ },
+/* 5 */
 /***/ function(module, exports) {
 
 	/**
@@ -190,248 +263,58 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 5 */
-/***/ function(module, exports) {
-
-	'use strict';
-	var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-	function ToObject(val) {
-		if (val == null) {
-			throw new TypeError('Object.assign cannot be called with null or undefined');
-		}
-
-		return Object(val);
-	}
-
-	function ownEnumerableKeys(obj) {
-		var keys = Object.getOwnPropertyNames(obj);
-
-		if (Object.getOwnPropertySymbols) {
-			keys = keys.concat(Object.getOwnPropertySymbols(obj));
-		}
-
-		return keys.filter(function (key) {
-			return propIsEnumerable.call(obj, key);
-		});
-	}
-
-	module.exports = Object.assign || function (target, source) {
-		var from;
-		var keys;
-		var to = ToObject(target);
-
-		for (var s = 1; s < arguments.length; s++) {
-			from = arguments[s];
-			keys = ownEnumerableKeys(Object(from));
-
-			for (var i = 0; i < keys.length; i++) {
-				to[keys[i]] = from[keys[i]];
-			}
-		}
-
-		return to;
-	};
-
-
-/***/ },
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(3)
+	'use strict';
 
-	/**
-	 * Iterate on an object
-	 */
-	function each(obj, fn) {
-	  for (var key in obj) {
-	    if (obj.hasOwnProperty(key)) {
-	      fn(obj[key], key)
-	    }
-	  }
-	}
+	exports.__esModule = true;
 
-	/**
-	 * Returns a mapping of the getDataBinding keys to
-	 * the reactor values
-	 */
-	function getState(reactor, data) {
-	  var state = {}
-	  each(data, function(value, key) {
-	    state[key] = reactor.evaluate(value)
-	  })
-	  return state
-	}
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	/**
-	 * Mixin expecting a context.reactor on the component
-	 *
-	 * Should be used if a higher level component has been
-	 * wrapped with provideReactor
-	 * @type {Object}
-	 */
-	module.exports = {
-	  contextTypes: {
-	    reactor: React.PropTypes.object.isRequired,
-	  },
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	  getInitialState: function() {
-	    if (!this.getDataBindings) {
-	      return null
-	    }
-	    return getState(this.context.reactor, this.getDataBindings())
-	  },
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	  componentDidMount: function() {
-	    if (!this.getDataBindings) {
-	      return
-	    }
-	    var component = this
-	    component.__nuclearUnwatchFns = []
-	    each(this.getDataBindings(), function(getter, key) {
-	      var unwatchFn = component.context.reactor.observe(getter, function(val) {
-	        var newState = {}
-	        newState[key] = val
-	        component.setState(newState)
-	      })
+	var _react = __webpack_require__(3);
 
-	      component.__nuclearUnwatchFns.push(unwatchFn)
-	    })
-	  },
+	var _reactorShape = __webpack_require__(4);
 
-	  componentWillUnmount: function() {
-	    if (!this.__nuclearUnwatchFns) {
-	      return
-	    }
-	    while (this.__nuclearUnwatchFns.length) {
-	      this.__nuclearUnwatchFns.shift()()
-	    }
-	  },
-	}
+	var _reactorShape2 = _interopRequireDefault(_reactorShape);
 
+	var Provider = (function (_Component) {
+	  _inherits(Provider, _Component);
 
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
+	  Provider.prototype.getChildContext = function getChildContext() {
+	    return {
+	      reactor: this.reactor
+	    };
+	  };
 
-	var React = __webpack_require__(3)
-	var hoistNonReactStatics = __webpack_require__(4)
-	var objectAssign = __webpack_require__(5)
+	  function Provider(props, context) {
+	    _classCallCheck(this, Provider);
 
-	/**
-	 * Iterate on an object
-	 */
-	function each(obj, fn) {
-	  for (var key in obj) {
-	    if (obj.hasOwnProperty(key)) {
-	      fn(obj[key], key)
-	    }
-	  }
-	}
-
-	/**
-	 * Returns a mapping of the getDataBinding keys to
-	 * the reactor values
-	 */
-	function getState(reactor, data) {
-	  var state = {}
-	  each(data, function(value, key) {
-	    state[key] = reactor.evaluate(value)
-	  })
-	  return state
-	}
-
-	function createComponent(Component, getDataBindings) {
-	  var componentName = Component.displayName || Component.name
-
-	  var NuclearComponent = React.createClass({
-	    displayName: 'NuclearComponent(' + componentName + ')',
-
-	    contextTypes: {
-	      reactor: React.PropTypes.object.isRequired,
-	    },
-
-	    getInitialState: function() {
-	      if (!getDataBindings) {
-	        return null
-	      }
-	      return getState(this.context.reactor, getDataBindings(this.props))
-	    },
-
-	    componentDidMount: function() {
-	      if (!getDataBindings) {
-	        return
-	      }
-	      var component = this
-	      component.__nuclearUnwatchFns = []
-	      each(getDataBindings(this.props), function(getter, key) {
-	        var unwatchFn = component.context.reactor.observe(getter, function(val) {
-	          var newState = {}
-	          newState[key] = val
-	          component.setState(newState)
-	        })
-
-	        component.__nuclearUnwatchFns.push(unwatchFn)
-	      })
-	    },
-
-	    componentWillUnmount: function() {
-	      if (!this.__nuclearUnwatchFns) {
-	        return
-	      }
-	      while (this.__nuclearUnwatchFns.length) {
-	        this.__nuclearUnwatchFns.shift()()
-	      }
-	    },
-
-	    render: function() {
-	      return React.createElement(Component, objectAssign({}, this.props, this.state, this.context))
-	    },
-	  })
-
-	  hoistNonReactStatics(NuclearComponent, Component)
-
-	  return NuclearComponent
-	}
-
-	/**
-	 * Provides dataBindings + reactor
-	 * as props to wrapped component
-	 *
-	 * Example:
-	 *   var WrappedComponent = nuclearComponent(Component, function(props) {
-	 *     return { counter: 'counter' };
-	 *   );
-	 *
-	 * Also supports the decorator pattern:
-	 *   @nuclearComponent((props) => {
-	 *     return { counter: 'counter' }
-	 *   })
-	 *   class BaseComponent extends React.Component {
-	 *     render() {
-	 *       const { counter, reactor } = this.props;
-	 *       return <div/>;
-	 *     }
-	 *   }
-	 *
-	 * @method nuclearComponent
-	 * @param {React.Component} [Component] component to wrap
-	 * @param {Function} getDataBindings function which returns dataBindings to listen for data change
-	 * @returns {React.Component|Function} returns function if using decorator pattern
-	 */
-	module.exports = function nuclearComponent(Component, getDataBindings) {
-	  // support decorator pattern
-	  // detect all React Components because they have a render method
-	  if (arguments.length === 0 || !Component.prototype.render) {
-	    // Component here is the getDataBindings Function
-	    return function connectToData(ComponentToDecorate) {
-	      return createComponent(ComponentToDecorate, Component)
-	    }
+	    _Component.call(this, props, context);
+	    this.reactor = props.reactor;
 	  }
 
-	  return createComponent.apply(null, arguments)
-	}
+	  Provider.prototype.render = function render() {
+	    return _react.Children.only(this.props.children);
+	  };
 
+	  return Provider;
+	})(_react.Component);
+
+	exports['default'] = Provider;
+
+	Provider.propTypes = {
+	  reactor: _reactorShape2['default'].isRequired,
+	  children: _react.PropTypes.element.isRequired
+	};
+	Provider.childContextTypes = {
+	  reactor: _reactorShape2['default'].isRequired
+	};
+	module.exports = exports['default'];
 
 /***/ }
 /******/ ])

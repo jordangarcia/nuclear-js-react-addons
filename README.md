@@ -1,204 +1,170 @@
 #NuclearJS addons for React
 
-Addons to quickly help you start up with [React](https://github.com/facebook/react) using [NuclearJS](https://github.com/optimizely/nuclear-js)
+Addons to quickly help you start up with [React](https://github.com/facebook/react) using [NuclearJS](https://github.com/optimizely/nuclear-js), inspired by [react-redux](https://github.com/rackt/react-redux).
 
-## Why ?
+Provides NuclearJS `reactor` context via the `<Provider reactor={reactor} />` component and binds to getters via `connect` higher order component (or decorator).
 
-Right now the last version of NuclearJS (1.1.1) works server side, but is not truly compatible.
-
-The problem lies in the way the reactor is used with the mixin and the suggested architecture. They are simply not useable server side because all are reliant on a singleton reactor, which would mean that different requests server side would share state.
-
-The proposed solution is simple:
-  * actions receive the reactor instead of requiring a singleton
-  * mixin "receives" the reactor instead of being created with a singleton
-
-Which means that we need a way to pass the reactor around. That way is react context.
-
-So, we use provideReactor to provide the reactor through your rendering tree via react context.
-
-And then you use the nuclearMixin or nuclearComponent that internally use the reactor attached to the context to operate on this reactor.
-
-All that remains is creating a reactor client side (one time) and pass it around, and creating a reactor server side (each requests) and pass it around.
-
-See [documentation](#documentation) and [examples](#examples) to see how to use (you can off course roll your own provideReactor, it's just a basic Higher Order Component helper to inject context).
 
 ## Install
 
-`npm install nuclear-js-react-addons`
+`npm install --save nuclear-js-react-addons`
 
 ```javascript
+// ES6
+import {
+  Provider,
+  connect,
+  nuclearMixin,
+} from 'nuclear-js-react-addons'
+```
+
+```javascript
+// ES5
 var NuclearAddons = require('nuclear-js-react-addons')
 
-// choose :o
-var provideReactor = NuclearAddons.provideReactor;
-var nuclearComponent = NuclearAddons.nuclearComponent;
+var Provider = NuclearAddons.Provider;
+var connect = NuclearAddons.connect;
 var nuclearMixin = NuclearAddons.nuclearMixin;
 ```
-or
-```javascript
-// choose :o
-import {
-    provideReactor,
-    nuclearMixin,
-    nuclearComponent
-} from 'nuclear-js-react-addons';
-```
+
 
 ## Documentation
 
-### provideReactor
+### Provider
 
-Helper to help you provide your reactor to a react component tree using react contexts.
+Container component allowing a `reactor` to be exposed via context.
 
 Simple App
+
 ```javascript
 // in a App.js file
-var App = React.createClass({
-    render: function() {
-        <Child/>
-    }
-});
-```
-
-elsewhere
-```javascript
-var Nuclear = require('nuclear-js');
-var reactor = new Nuclear.Reactor();
-var provideReactor = require('nuclear-js-react-addons').provideReactor;
-// or
-var provideReactor = require('nuclear-js-react-addons/provideReactor');
-var App = require('./App');
-// Wrap your App into a Higher order Component => HoC
-var App = provideReactor(App);
-
-// If you don't pass the reactor as a prop you will have a warning
-React.render(<App reactor={reactor}/>, someDiv);
-```
-
-or decorator pattern (es7)
-
-```javascript
-@provideReactor
 class App extends React.Component {
-    render() {
-        return <Child/>
-    }
+  render() {
+    <Provider reactor={reactor}>
+      <SomeComponent />
+    </Provider>
+  }
 }
 ```
 
 Now the reactor is provided as the reactor key of the react context if you declare
 ```javascript
 contextTypes: {
-    reactor: React.propTypes.object.isRequired
+  reactor: React.propTypes.object.isRequired
 }
 ```
 
 which you won't have to do manually, because both a mixin and a component are available for you to use.
 
-### nuclearMixin
-
-```javascript
-var nuclearMixin = require('nuclear-js-react-addons').nuclearMixin;
-// or
-var nuclearMixin = require('nuclear-js-react-addons/nuclearMixin');
-var someNuclearModule = require('./someModule');
-var someOtherNucModule = require('./someModule2');
-
-// This component is used in a tree that somehow
-// already has a reactor in its context
-// maybe through using provideReactor or something else
-var Child = React.createClass({
-    mixins: [nuclearMixin],
-
-    // you can omit this to simply have access to the reactor in the context
-    getDataBindings: function() {
-        return {
-            foo: someNuclearModule.getters.meh,
-            bar: someOtherNucModule.getters.whatever
-        };
-    },
-
-    render: function() {
-        // you can pass it to actions
-        var reactor = this.context.reactor;
-        // there is your data
-        var foo = this.state.foo;
-        var bar = this.state.bar;
-
-        return (
-            <div>
-                {foo}
-                </br>
-                {bar}
-            </div>
-        );
-    }
-});
-```
-
-### nuclearComponent
-If you prefer to stay away from mixin, there's also a nuclear component to suit your needs. It also support the decorator pattern
+### connect
+For usage with ES6 class syntax this Higher Order Component can be used as a decorator or as a javascript function.
 
 Example using the decorator pattern:
+
 ```javascript
+import { Component } from 'react'
 import { getters } from './someModule';
-import { nuclearComponent } from 'nuclear-js-react-addons';
+import { connect } from 'nuclear-js-react-addons';
 
-@nuclearComponent((props) => {
-    return {
-        foo: getters.meh,
-        bar: getters.haha
-    };
+@connect(props => ({
+  foo: getters.foo,
+  bar: getters.bar,
 })
-class Child extends React.Component {
-    render() {
-        // get the reactor and your dataBindings
-        // from the props passed in from the wrapper
-        const {
-            reactor,
-            foo,
-            bar
-        } = this.props;
+export default class Child extends Component {
+  render() {
+    // get the reactor and your dataBindings
+    // from the props passed in from the wrapper
+    const {
+      reactor,
+      foo,
+      bar
+    } = this.props;
 
-        return (
-            <div>
-                {foo}
-                {bar}
-            </div>
-        )
-    }
+    return (
+      <div>
+        {foo}
+        {bar}
+      </div>
+    )
+  }
 }
 ```
 
-or simply still using es5
+Or as a function
+
 ```javascript
-var nuclearModule = require( './someModule');
-var nuclearComponent = require('nuclear-js-react-addons').nuclearComponent;
+import { Component } from 'react'
+import { getters } from './someModule';
+import { connect } from 'nuclear-js-react-addons';
 
+class Child extends Component {
+  render() {
+    // get the reactor and your dataBindings
+    // from the props passed in from the wrapper
+    const {
+      reactor,
+      foo,
+      bar
+    } = this.props;
+
+    return (
+      <div>
+        {foo}
+        {bar}
+      </div>
+    )
+  }
+}
+
+function mapStateToProps(props) {
+  return {
+    foo: getters.foo,
+    bar: getters.bar,
+  }
+}
+
+
+const ConnectedChild = connect(mapStateToProps)(Child)
+export default ConnectedChild
+```
+
+### nuclearMixin
+
+```javascript
+import { nuclearMixin } from 'nuclear-js-react-addons'
+import someNuclearModule from './someModule'
+import someOtherNucModule from './someModule2'
+
+// Component must be a descendent where `context.reactor` exists
 var Child = React.createClass({
-    render: function() {
-        // get the reactor and your dataBindings
-        // from the props passed in from the wrapper
-        var reactor = this.props.reactor;
-        var foo = this.props.foo;
-        var bar = this.props.bar;
+  mixins: [nuclearMixin],
 
-        return (
-            <div>
-                {foo}
-                {bar}
-            </div>
-        )
-    }
-});
-
-nuclearModule.exports = nuclearComponent(Child, function(props) {
+  // you can omit this to simply have access to the reactor in the context
+  getDataBindings() {
     return {
-        foo: nuclearModule.getters.meh,
-        bar: nuclearModule.getters.haha
+      foo: someNuclearModule.getters.meh,
+      bar: someOtherNucModule.getters.whatever
     };
+  },
+
+  render() {
+    // you can pass it to actions
+    let reactor = this.context.reactor;
+    // there is your data
+    let foo = this.state.foo;
+    let bar = this.state.bar;
+
+    return (
+      <div>
+        {foo}
+        </br>
+        {bar}
+      </div>
+    );
+  }
 });
 ```
+
 
 ##Examples
 
@@ -206,14 +172,11 @@ Additional [examples here](https://github.com/optimizely/nuclear-js/tree/master/
 
 ##Tests
 
-Browser tests spin up `npm run browser-tests` it will launch a webpack dev server and open http://localhost:8080/tests.runner.html, change the port with `npm run browsers-tests -- --port=#PORT`.
-
-Node tests needs io.js (because of jsdom@5), run `npm tests` or `npm run watch` for TDD.
+Run tests with karma via `npm test`
 
 ##Inspirations
 
 Inspired/adapted from
-
 
   * [gaearon/redux](https://github.com/gaearon/redux)
 

@@ -1,4 +1,4 @@
-var React = require('react')
+import { PropTypes } from 'react'
 
 /**
  * Iterate on an object
@@ -30,9 +30,9 @@ function getState(reactor, data) {
  * wrapped with provideReactor
  * @type {Object}
  */
-module.exports = {
+export default {
   contextTypes: {
-    reactor: React.PropTypes.object.isRequired,
+    reactor: PropTypes.object.isRequired,
   },
 
   getInitialState: function() {

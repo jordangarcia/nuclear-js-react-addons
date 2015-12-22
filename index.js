@@ -1,5 +1,9 @@
-exports.provideReactor = require('./provideReactor')
+import connect from './src/connect'
+import Provider from './src/Provider'
+import nuclearMixin from './src/nuclearMixin'
 
-exports.nuclearMixin = require('./nuclearMixin')
-
-exports.nuclearComponent = require('./nuclearComponent')
+export default {
+  connect,
+  Provider,
+  nuclearMixin,
+}

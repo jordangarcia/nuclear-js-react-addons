@@ -1,109 +1,113 @@
-import React from 'react/addons'
-import jsdomReact from './jsdomReact'
-import nuclearMixin from '../nuclearMixin'
-import provideReactor from '../provideReactor'
-import 'should'
+import { Reactor, Store } from 'nuclear-js'
+import expect from 'expect'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { Provider, nuclearMixin } from '../index'
+import setup from './setup'
 
-const { TestUtils } = React.addons
-
-describe('react mixin', () => {
-  jsdomReact()
-
-  it('should not throw on mount if no dataBindings', () => {
-    const Component = React.createClass({
-      mixins: [nuclearMixin],
-
-      render() {
-        return <div/>
-      },
-    })
-
-    const fakeReactor = {
-      foo: 'bar',
+function mountTestComponent(reactor, children) {
+  class TestComponent extends React.Component {
+    constructor(props, context) {
+      super(props, context)
     }
 
-    const WrappedComponent = provideReactor(Component)
-    const wrappedComponent = TestUtils.renderIntoDocument(<WrappedComponent reactor={fakeReactor}/>)
-    const component = TestUtils.findRenderedComponentWithType(wrappedComponent, Component)
-    component.context.reactor.should.equal(fakeReactor)
+    render() {
+      return <Provider reactor={reactor}>{children}</Provider>
+    }
+  }
+  ReactDOM.render(<TestComponent />, document.getElementById('test-root'))
+
+}
+
+describe('nuclearMixin', () => {
+  setup()
+
+  let reactor
+  beforeEach(() => {
+    reactor = new Reactor()
+    reactor.registerStores({
+      store1: Store({
+        getInitialState: () => 1,
+        initialize() {
+          this.on('increment1', state => state + 1)
+        },
+      }),
+      store2: Store({
+        getInitialState: () => 2,
+        initialize() {
+          this.on('increment1', state => state + 1)
+        },
+      }),
+    })
   })
 
-  describe('mounting flow', () => {
-    const Component = React.createClass({
-      mixins: [nuclearMixin],
+  describe('when no getDataBindings function is passed', () => {
+    it('it should provide reactor as context', () => {
+      let TestComponent = React.createClass({
+        mixins: [nuclearMixin],
 
-      getDataBindings() {
-        return {
-          count: 'count',
-          foor: 'bar',
-        }
-      },
-
-      render() {
-        return <div/>
-      },
-    })
-
-    let div
-    let wrappedComponent
-    let component
-
-    let evaluateCalls = 0
-    let observeCalls = 0
-    let unwatchCalls = 0
-
-    it('should call getState if dataBindings', () => {
-      div = document.createElement('div')
-
-      const fakeReactor = {
-        evaluate() {
-          ++evaluateCalls
+        componentDidMount() {
+          expect(this.context.reactor).toEqual(reactor)
         },
-        observe() {
-          ++observeCalls
-          return () => {
-            ++unwatchCalls
+
+        render() {
+          return <div></div>
+        },
+      })
+
+      mountTestComponent(reactor, <TestComponent />)
+    })
+  })
+
+  describe('when a getDataBindings function is passed', () => {
+    it('should provide initial values based on the state', () => {
+      let TestComponent = React.createClass({
+        mixins: [nuclearMixin],
+
+        getDataBindings() {
+          return {
+            value1: ['store1'],
+            value2: ['store2'],
           }
         },
-      }
 
-      const WrappedComponent = provideReactor(Component)
-      wrappedComponent = React.render(<WrappedComponent reactor={fakeReactor}/>, div)
-      component = TestUtils.findRenderedComponentWithType(wrappedComponent, Component)
-      component.context.reactor.should.equal(fakeReactor)
-      evaluateCalls.should.equal(2)
-      observeCalls.should.equal(2)
-      unwatchCalls.should.equal(0)
-      component.__nuclearUnwatchFns.length.should.equal(2)
+        componentDidMount() {
+          expect(this.state.value1).toEqual(1)
+          expect(this.state.value2).toEqual(2)
+        },
+
+        render() {
+          return <div></div>
+        },
+      })
+
+      mountTestComponent(reactor, <TestComponent />)
     })
 
-    it('should properly unwatch when unmounting', () => {
-      React.unmountComponentAtNode(div)
-      evaluateCalls.should.equal(2)
-      observeCalls.should.equal(2)
-      unwatchCalls.should.equal(2)
-      component.__nuclearUnwatchFns.length.should.equal(0)
+    it('should subscribe to updates', () => {
+      let renderedValues = []
+      let TestComponent = React.createClass({
+        mixins: [nuclearMixin],
+
+        getDataBindings() {
+          return {
+            value1: ['store1'],
+          }
+        },
+
+        render() {
+          renderedValues.push(this.state.value1)
+          return <div></div>
+        },
+      })
+
+      mountTestComponent(reactor, <TestComponent />)
+
+      expect(renderedValues).toEqual([1])
+      reactor.dispatch('increment1')
+      expect(renderedValues).toEqual([1, 2])
+      reactor.dispatch('otherAction')
+      expect(renderedValues).toEqual([1, 2])
     })
-  })
-
-  it('should not throw when unmounting if no dataBindings', () => {
-    const div = document.createElement('div')
-
-    const fakeReactor = {
-      foo: 'bar',
-    }
-
-    let NoBindings = React.createClass({
-      mixins: [nuclearMixin],
-
-      render() {
-        return <div/>
-      },
-    })
-
-    NoBindings = provideReactor(NoBindings)
-
-    React.render(<NoBindings reactor={fakeReactor}/>, div)
-    React.unmountComponentAtNode(div)
   })
 })
