@@ -2,7 +2,7 @@ import { Reactor, Store } from 'nuclear-js'
 import expect from 'expect'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Provider, connect } from '../index'
+import { Provider, connect } from '../src/index'
 import setup from './setup'
 
 function mountTestComponent(reactor, children) {

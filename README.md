@@ -123,7 +123,6 @@ function mapStateToProps(props) {
   }
 }
 
-
 const ConnectedChild = connect(mapStateToProps)(Child)
 export default ConnectedChild
 ```
@@ -162,6 +161,117 @@ var Child = React.createClass({
       </div>
     );
   }
+});
+```
+
+
+### provideReactor
+
+*Deprecated in 0.3.0, use `<Provider reactor={reactor}>` instead*
+
+Helper to help you provide your reactor to a react component tree using react contexts.
+
+Simple App
+```javascript
+// in a App.js file
+var App = React.createClass({
+    render: function() {
+        <Child/>
+    }
+});
+```
+
+elsewhere
+```javascript
+var Nuclear = require('nuclear-js');
+var reactor = new Nuclear.Reactor();
+var provideReactor = require('nuclear-js-react-addons').provideReactor;
+// or
+var provideReactor = require('nuclear-js-react-addons/provideReactor');
+var App = require('./App');
+// Wrap your App into a Higher order Component => HoC
+var App = provideReactor(App);
+
+// If you don't pass the reactor as a prop you will have a warning
+React.render(<App reactor={reactor}/>, someDiv);
+```
+
+or decorator pattern (es7)
+
+```javascript
+@provideReactor
+class App extends React.Component {
+    render() {
+        return <Child/>
+    }
+}
+```
+
+
+### nuclearComponent
+
+*Deprecated in 0.3.0, use `connect()` instead*
+
+If you prefer to stay away from mixin, there's also a nuclear component to suit your needs. It also support the decorator pattern
+
+Example using the decorator pattern:
+```javascript
+import { getters } from './someModule';
+import { nuclearComponent } from 'nuclear-js-react-addons';
+
+@nuclearComponent((props) => {
+    return {
+        foo: getters.meh,
+        bar: getters.haha
+    };
+})
+class Child extends React.Component {
+    render() {
+        // get the reactor and your dataBindings
+        // from the props passed in from the wrapper
+        const {
+            reactor,
+            foo,
+            bar
+        } = this.props;
+
+        return (
+            <div>
+                {foo}
+                {bar}
+            </div>
+        )
+    }
+}
+```
+
+or simply still using es5
+```javascript
+var nuclearModule = require( './someModule');
+var nuclearComponent = require('nuclear-js-react-addons').nuclearComponent;
+
+var Child = React.createClass({
+    render: function() {
+        // get the reactor and your dataBindings
+        // from the props passed in from the wrapper
+        var reactor = this.props.reactor;
+        var foo = this.props.foo;
+        var bar = this.props.bar;
+
+        return (
+            <div>
+                {foo}
+                {bar}
+            </div>
+        )
+    }
+});
+
+nuclearModule.exports = nuclearComponent(Child, function(props) {
+    return {
+        foo: nuclearModule.getters.meh,
+        bar: nuclearModule.getters.haha
+    };
 });
 ```
 

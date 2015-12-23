@@ -2,12 +2,12 @@
   "name": "nuclear-js-react-addons",
   "version": "0.3.0",
   "description": "React addons for nuclear-js",
-  "main": "./index.js",
+  "main": "build/index.js",
   "scripts": {
     "build": "scripts/build.sh",
     "prepublish": "npm run build",
-    "test": "eslint . && karma start --single-run",
-    "lint": "eslint .",
+    "test": "npm run lint && karma start --single-run",
+    "lint": "eslint src",
     "watch": "karma start"
   },
   "authors": [

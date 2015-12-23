@@ -2,7 +2,7 @@ import { Reactor } from 'nuclear-js'
 import expect from 'expect'
 import React, { PropTypes } from 'react'
 import ReactDOM from 'react-dom'
-import { provideReactor } from '../index'
+import { provideReactor } from '../src/index'
 import setup from './setup'
 
 describe('provideReactor', () => {

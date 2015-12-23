@@ -7,7 +7,7 @@
 		exports["NuclearJSReactAddons"] = factory(require("react"));
 	else
 		root["NuclearJSReactAddons"] = factory(root["React"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_3__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -54,36 +54,40 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(1);
-	module.exports = __webpack_require__(1);
-
-
-/***/ },
-/* 1 */
-/***/ function(module, exports, __webpack_require__) {
-
 	'use strict';
 
 	exports.__esModule = true;
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _srcConnect = __webpack_require__(2);
+	var _connect = __webpack_require__(1);
 
-	var _srcConnect2 = _interopRequireDefault(_srcConnect);
+	var _connect2 = _interopRequireDefault(_connect);
 
-	var _srcProvider = __webpack_require__(6);
+	var _Provider = __webpack_require__(5);
 
-	var _srcProvider2 = _interopRequireDefault(_srcProvider);
+	var _Provider2 = _interopRequireDefault(_Provider);
 
-	exports['default'] = {
-	  connect: _srcConnect2['default'],
-	  Provider: _srcProvider2['default']
-	};
-	module.exports = exports['default'];
+	var _nuclearMixin = __webpack_require__(6);
+
+	var _nuclearMixin2 = _interopRequireDefault(_nuclearMixin);
+
+	var _provideReactor = __webpack_require__(7);
+
+	var _provideReactor2 = _interopRequireDefault(_provideReactor);
+
+	var _nuclearComponent = __webpack_require__(9);
+
+	var _nuclearComponent2 = _interopRequireDefault(_nuclearComponent);
+
+	exports.connect = _connect2['default'];
+	exports.Provider = _Provider2['default'];
+	exports.nuclearMixin = _nuclearMixin2['default'];
+	exports.provideReactor = _provideReactor2['default'];
+	exports.nuclearComponent = _nuclearComponent2['default'];
 
 /***/ },
-/* 2 */
+/* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100,13 +104,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _react = __webpack_require__(3);
+	var _react = __webpack_require__(2);
 
-	var _reactorShape = __webpack_require__(4);
+	var _reactorShape = __webpack_require__(3);
 
 	var _reactorShape2 = _interopRequireDefault(_reactorShape);
 
-	var _hoistNonReactStatics = __webpack_require__(5);
+	var _hoistNonReactStatics = __webpack_require__(4);
 
 	var _hoistNonReactStatics2 = _interopRequireDefault(_hoistNonReactStatics);
 
@@ -206,20 +210,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 3 */
+/* 2 */
 /***/ function(module, exports) {
 
-	module.exports = __WEBPACK_EXTERNAL_MODULE_3__;
+	module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
 
 /***/ },
-/* 4 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _react = __webpack_require__(3);
+	var _react = __webpack_require__(2);
 
 	exports['default'] = _react.PropTypes.shape({
 	  dispatch: _react.PropTypes.func.isRequired,
@@ -230,7 +234,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 5 */
+/* 4 */
 /***/ function(module, exports) {
 
 	/**
@@ -263,7 +267,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 6 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -276,9 +280,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _react = __webpack_require__(3);
+	var _react = __webpack_require__(2);
 
-	var _reactorShape = __webpack_require__(4);
+	var _reactorShape = __webpack_require__(3);
 
 	var _reactorShape2 = _interopRequireDefault(_reactorShape);
 
@@ -311,9 +315,289 @@ return /******/ (function(modules) { // webpackBootstrap
 	  reactor: _reactorShape2['default'].isRequired,
 	  children: _react.PropTypes.element.isRequired
 	};
+
 	Provider.childContextTypes = {
 	  reactor: _reactorShape2['default'].isRequired
 	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	exports.__esModule = true;
+
+	var _react = __webpack_require__(2);
+
+	/**
+	 * Iterate on an object
+	 */
+	function each(obj, fn) {
+	  for (var key in obj) {
+	    if (obj.hasOwnProperty(key)) {
+	      fn(obj[key], key);
+	    }
+	  }
+	}
+
+	/**
+	 * Returns a mapping of the getDataBinding keys to
+	 * the reactor values
+	 */
+	function getState(reactor, data) {
+	  var state = {};
+	  each(data, function (value, key) {
+	    state[key] = reactor.evaluate(value);
+	  });
+	  return state;
+	}
+
+	/**
+	 * Mixin expecting a context.reactor on the component
+	 *
+	 * Should be used if a higher level component has been
+	 * wrapped with provideReactor
+	 * @type {Object}
+	 */
+	exports['default'] = {
+	  contextTypes: {
+	    reactor: _react.PropTypes.object.isRequired
+	  },
+
+	  getInitialState: function getInitialState() {
+	    if (!this.getDataBindings) {
+	      return null;
+	    }
+	    return getState(this.context.reactor, this.getDataBindings());
+	  },
+
+	  componentDidMount: function componentDidMount() {
+	    if (!this.getDataBindings) {
+	      return;
+	    }
+	    var component = this;
+	    component.__nuclearUnwatchFns = [];
+	    each(this.getDataBindings(), function (getter, key) {
+	      var unwatchFn = component.context.reactor.observe(getter, function (val) {
+	        var newState = {};
+	        newState[key] = val;
+	        component.setState(newState);
+	      });
+
+	      component.__nuclearUnwatchFns.push(unwatchFn);
+	    });
+	  },
+
+	  componentWillUnmount: function componentWillUnmount() {
+	    if (!this.__nuclearUnwatchFns) {
+	      return;
+	    }
+	    while (this.__nuclearUnwatchFns.length) {
+	      this.__nuclearUnwatchFns.shift()();
+	    }
+	  }
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	exports.__esModule = true;
+	exports['default'] = provideReactor;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _hoistNonReactStatics = __webpack_require__(4);
+
+	var _hoistNonReactStatics2 = _interopRequireDefault(_hoistNonReactStatics);
+
+	var _objectAssign = __webpack_require__(8);
+
+	var _objectAssign2 = _interopRequireDefault(_objectAssign);
+
+	function createComponent(Component, additionalContextTypes) {
+	  var componentName = Component.displayName || Component.name;
+	  var childContextTypes = _objectAssign2['default']({
+	    reactor: _react2['default'].PropTypes.object.isRequired
+	  }, additionalContextTypes || {});
+
+	  var ReactorProvider = _react2['default'].createClass({
+	    displayName: 'ReactorProvider(' + componentName + ')',
+
+	    propTypes: {
+	      reactor: _react2['default'].PropTypes.object.isRequired
+	    },
+
+	    childContextTypes: childContextTypes,
+
+	    getChildContext: function getChildContext() {
+	      var childContext = {
+	        reactor: this.props.reactor
+	      };
+	      if (additionalContextTypes) {
+	        Object.keys(additionalContextTypes).forEach(function (key) {
+	          childContext[key] = this.props[key];
+	        }, this);
+	      }
+	      return childContext;
+	    },
+
+	    render: function render() {
+	      return _react2['default'].createElement(Component, this.props);
+	    }
+	  });
+
+	  _hoistNonReactStatics2['default'](ReactorProvider, Component);
+
+	  return ReactorProvider;
+	}
+
+	/**
+	 * Provides reactor prop to all children as React context
+	 *
+	 * Example:
+	 *   var WrappedComponent = provideReactor(Component, {
+	 *     foo: React.PropTypes.string
+	 *   });
+	 *
+	 * Also supports the decorator pattern:
+	 *   @provideReactor({
+	 *     foo: React.PropTypes.string
+	 *   })
+	 *   class BaseComponent extends React.Component {
+	 *     render() {
+	 *       return <div/>;
+	 *     }
+	 *   }
+	 *
+	 * @method provideReactor
+	 * @param {React.Component} [Component] component to wrap
+	 * @param {object} additionalContextTypes Additional contextTypes to add
+	 * @returns {React.Component|Function} returns function if using decorator pattern
+	 */
+
+	function provideReactor(Component, additionalContextTypes) {
+	  console.warn('`provideReactor` is deprecated, use `<Provider reactor={reactor} />` instead');
+	  // support decorator pattern
+	  if (arguments.length === 0 || typeof arguments[0] !== 'function') {
+	    additionalContextTypes = arguments[0];
+	    return function connectToReactorDecorator(ComponentToDecorate) {
+	      return createComponent(ComponentToDecorate, additionalContextTypes);
+	    };
+	  }
+
+	  return createComponent.apply(null, arguments);
+	}
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	'use strict';
+	var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+	function ToObject(val) {
+		if (val == null) {
+			throw new TypeError('Object.assign cannot be called with null or undefined');
+		}
+
+		return Object(val);
+	}
+
+	function ownEnumerableKeys(obj) {
+		var keys = Object.getOwnPropertyNames(obj);
+
+		if (Object.getOwnPropertySymbols) {
+			keys = keys.concat(Object.getOwnPropertySymbols(obj));
+		}
+
+		return keys.filter(function (key) {
+			return propIsEnumerable.call(obj, key);
+		});
+	}
+
+	module.exports = Object.assign || function (target, source) {
+		var from;
+		var keys;
+		var to = ToObject(target);
+
+		for (var s = 1; s < arguments.length; s++) {
+			from = arguments[s];
+			keys = ownEnumerableKeys(Object(from));
+
+			for (var i = 0; i < keys.length; i++) {
+				to[keys[i]] = from[keys[i]];
+			}
+		}
+
+		return to;
+	};
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	exports.__esModule = true;
+	exports['default'] = nuclearComponent;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _connect = __webpack_require__(1);
+
+	var _connect2 = _interopRequireDefault(_connect);
+
+	/**
+	 * Provides dataBindings + reactor
+	 * as props to wrapped component
+	 *
+	 * Example:
+	 *   var WrappedComponent = nuclearComponent(Component, function(props) {
+	 *     return { counter: 'counter' };
+	 *   );
+	 *
+	 * Also supports the decorator pattern:
+	 *   @nuclearComponent((props) => {
+	 *     return { counter: 'counter' }
+	 *   })
+	 *   class BaseComponent extends React.Component {
+	 *     render() {
+	 *       const { counter, reactor } = this.props;
+	 *       return <div/>;
+	 *     }
+	 *   }
+	 *
+	 * @method nuclearComponent
+	 * @param {React.Component} [Component] component to wrap
+	 * @param {Function} getDataBindings function which returns dataBindings to listen for data change
+	 * @returns {React.Component|Function} returns function if using decorator pattern
+	 */
+
+	function nuclearComponent(Component, getDataBindings) {
+	  console.warn('nuclearComponent is deprecated, use `connect()` instead');
+	  // support decorator pattern
+	  // detect all React Components because they have a render method
+	  if (arguments.length === 0 || !Component.prototype.render) {
+	    // Component here is the getDataBindings Function
+	    return _connect2['default'](Component);
+	  }
+
+	  return _connect2['default'](getDataBindings)(Component);
+	}
+
 	module.exports = exports['default'];
 
 /***/ }

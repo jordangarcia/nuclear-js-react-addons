@@ -2,7 +2,7 @@ import { Reactor } from 'nuclear-js'
 import expect from 'expect'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Provider } from '../index'
+import { Provider } from '../src/index'
 import setup from './setup'
 
 describe('Provider', () => {
