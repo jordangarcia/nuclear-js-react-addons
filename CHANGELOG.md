@@ -1,7 +1,12 @@
-## 0.3.0 (December 22, 2015)
+## 0.3.0 (December 23, 2015)
 
- - BREAKING CHANGE: `provideReactor` is deprecated in favor of a `Provider` component
- - BREAKING CHANGE: `nuclearComponent` renamed to `connect`, now a higher order function that returns a Higher Order Component.  Usage as a decorator remains the same.
+New API very much inspired from [react-redux](https://github.com/rackt/react-redux).  
+
+  - new `Provider` component
+  - new function `conenct()` using a Higher Order Component to setup a data binding of getters child component passed via props.
+  - [DEPRECATED] `provideReactor` (can still be used with deprecation warning)
+  - [DEPRECATED] `nuclearComponent` (can still be used with deprecation warning)
+
 
 ## 0.2.0 (September 14, 2015)
 
