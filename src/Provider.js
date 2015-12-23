@@ -22,6 +22,7 @@ Provider.propTypes = {
   reactor: reactorShape.isRequired,
   children: PropTypes.element.isRequired,
 }
+
 Provider.childContextTypes = {
   reactor: reactorShape.isRequired,
 }
