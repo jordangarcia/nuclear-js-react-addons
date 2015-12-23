@@ -7,7 +7,7 @@
     "build": "scripts/build.sh",
     "prepublish": "npm run build",
     "test": "npm run lint && karma start --single-run",
-    "lint": "eslint src",
+    "lint": "eslint .",
     "watch": "karma start"
   },
   "authors": [
