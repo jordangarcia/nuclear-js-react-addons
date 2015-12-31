@@ -278,6 +278,46 @@ nuclearModule.exports = nuclearComponent(Child, function(props) {
 
 ##Examples
 
+**Resubscribe to getters when props update**
+
+This is possible by extending a `@connect` component.
+
+```js
+import { Component } from 'react'
+
+@connect(props => ({
+  value: ['store1', props.key]
+}))
+class NuclearComponent extends Component {
+  constructor(props, context) {
+    super(props, context)
+  }
+
+  render() {
+    <span>{this.props.value}</span>
+  }
+}
+```
+
+`this.props.value` will always be bound to the initial value of `this.props.key`, if we want a component that updates when props change we can simply extend it.
+
+```js
+class ResubscribingNuclearComponent extends NuclearComponent {
+  constructor(props, context) {
+    super(props, context)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // any logic to check next props against current props can go here
+    if (this.props.key !== nextProps.key) {
+      this.resubscribe(nextProps);
+    }
+  }
+}
+```
+
+Our `ResubscribingNuclearComponent` now rebinds all getters to the new props.
+
 Additional [examples here](https://github.com/optimizely/nuclear-js/tree/master/examples/isomorphic-flux-chat)
 
 ##Tests
