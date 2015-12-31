@@ -116,57 +116,6 @@ describe('nuclearComponent', () => {
       reactor.dispatch('otherAction')
       expect(renderedValues).toEqual([1, 2])
     })
-
-    it('should rebind subscriptions when a prop changes', () => {
-      let renderedValues = []
-
-      class Child extends React.Component {
-        constructor(props, context) {
-          super(props, context)
-        }
-
-        render() {
-          renderedValues.push(this.props.value)
-          return <div></div>
-        }
-      }
-
-      let ReactoredChild = nuclearComponent(Child, props => {
-        return {
-          value: [props.propValue],
-        }
-      })
-
-      let setPropValue
-      @provideReactor()
-      class TestComponent extends React.Component {
-        state = {
-          propValue: 'store1',
-        }
-
-        constructor(props, context) {
-          super(props, context)
-        }
-
-        componentWillMount() {
-          setPropValue = (val) => {
-            this.setState({ propValue: val })
-          }
-        }
-
-        render() {
-          return <ReactoredChild propValue={this.state.propValue} />
-        }
-      }
-      ReactDOM.render(<TestComponent reactor={reactor} />, document.getElementById('test-root'))
-
-      expect(renderedValues).toEqual([1])
-      setPropValue('store2')
-      expect(renderedValues).toEqual([1, 2])
-      reactor.dispatch('increment1')
-      reactor.dispatch('increment2')
-      expect(renderedValues).toEqual([1, 2, 3])
-    })
   })
 
   describe('when used as a decorator', () => {

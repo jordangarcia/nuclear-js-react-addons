@@ -13,11 +13,22 @@ export default function connect(mapStateToProps) {
       constructor(props, context) {
         super(props, context)
         this.reactor = props.reactor || context.reactor
-
         this.unsubscribeFns = []
+        this.updatePropMap(props)
+      }
+
+      resubscribe(props) {
+        this.unsubscribe()
+        this.updatePropMap(props)
+        this.updateState()
+        this.subscribe()
       }
 
       componentWillMount() {
+        this.updateState()
+      }
+
+      componentDidMount() {
         this.subscribe(this.props)
       }
 
@@ -25,18 +36,24 @@ export default function connect(mapStateToProps) {
         this.unsubscribe()
       }
 
-      componentWillReceiveProps(nextProps) {
-        this.subscribe(nextProps)
+      updatePropMap(props) {
+        this.propMap = (mapStateToProps) ? mapStateToProps(props) : {}
       }
 
-      subscribe(props) {
-        this.unsubscribe()
-        if (!mapStateToProps) {
-          return
+      updateState() {
+        let propMap = this.propMap
+        let stateToSet = {}
+
+        for (let key in propMap) {
+          const getter = propMap[key]
+          stateToSet[key] = this.reactor.evaluate(getter)
         }
 
-        let propMap = mapStateToProps(props)
-        let stateToSet = {}
+        this.setState(stateToSet)
+      }
+
+      subscribe() {
+        let propMap = this.propMap
         for (let key in propMap) {
           const getter = propMap[key]
           const unsubscribeFn = this.reactor.observe(getter, val => {
@@ -46,11 +63,7 @@ export default function connect(mapStateToProps) {
           })
 
           this.unsubscribeFns.push(unsubscribeFn)
-
-          stateToSet[key] = this.reactor.evaluate(getter)
         }
-
-        this.setState(stateToSet)
       }
 
       unsubscribe() {

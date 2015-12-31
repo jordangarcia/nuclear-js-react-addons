@@ -136,6 +136,17 @@ describe('connect', () => {
         }
       })(Child)
 
+      class ResubscribingChild extends ReactoredChild {
+        constructor(props, context) {
+          super(props, context)
+        }
+
+        componentWillReceiveProps(nextProps) {
+          this.resubscribe(nextProps)
+        }
+      }
+
+
       let setPropValue
       class TestComponent extends React.Component {
         state = {
@@ -153,7 +164,7 @@ describe('connect', () => {
         }
 
         render() {
-          return <Provider reactor={reactor}><ReactoredChild propValue={this.state.propValue} /></Provider>
+          return <Provider reactor={reactor}><ResubscribingChild propValue={this.state.propValue} /></Provider>
         }
       }
       ReactDOM.render(<TestComponent />, document.getElementById('test-root'))
@@ -204,7 +215,16 @@ describe('connect', () => {
         }
       }
 
-      mountTestComponent(reactor, <Child />)
+      class ResubscribingChild extends Child {
+        constructor(props, state) {
+          super(props, state)
+        }
+        componentWillReceiveProps(nextProps) {
+          this.resubscribe()
+        }
+      }
+
+      mountTestComponent(reactor, <ResubscribingChild />)
 
       expect(renderedValues).toEqual([1])
 
