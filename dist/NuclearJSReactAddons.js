@@ -128,11 +128,22 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        _Component.call(this, props, context);
 	        this.reactor = props.reactor || context.reactor;
-
 	        this.unsubscribeFns = [];
+	        this.updatePropMap(props);
 	      }
 
+	      Connect.prototype.resubscribe = function resubscribe(props) {
+	        this.unsubscribe();
+	        this.updatePropMap(props);
+	        this.updateState();
+	        this.subscribe();
+	      };
+
 	      Connect.prototype.componentWillMount = function componentWillMount() {
+	        this.updateState();
+	      };
+
+	      Connect.prototype.componentDidMount = function componentDidMount() {
 	        this.subscribe(this.props);
 	      };
 
@@ -140,20 +151,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.unsubscribe();
 	      };
 
-	      Connect.prototype.componentWillReceiveProps = function componentWillReceiveProps(nextProps) {
-	        this.subscribe(nextProps);
+	      Connect.prototype.updatePropMap = function updatePropMap(props) {
+	        this.propMap = mapStateToProps ? mapStateToProps(props) : {};
 	      };
 
-	      Connect.prototype.subscribe = function subscribe(props) {
-	        var _this = this;
+	      Connect.prototype.updateState = function updateState() {
+	        var propMap = this.propMap;
+	        var stateToSet = {};
 
-	        this.unsubscribe();
-	        if (!mapStateToProps) {
-	          return;
+	        for (var key in propMap) {
+	          var getter = propMap[key];
+	          stateToSet[key] = this.reactor.evaluate(getter);
 	        }
 
-	        var propMap = mapStateToProps(props);
-	        var stateToSet = {};
+	        this.setState(stateToSet);
+	      };
+
+	      Connect.prototype.subscribe = function subscribe() {
+	        var _this = this;
+
+	        var propMap = this.propMap;
 
 	        var _loop = function (key) {
 	          var getter = propMap[key];
@@ -164,15 +181,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	          });
 
 	          _this.unsubscribeFns.push(unsubscribeFn);
-
-	          stateToSet[key] = _this.reactor.evaluate(getter);
 	        };
 
 	        for (var key in propMap) {
 	          _loop(key);
 	        }
-
-	        this.setState(stateToSet);
 	      };
 
 	      Connect.prototype.unsubscribe = function unsubscribe() {
