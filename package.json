@@ -32,6 +32,10 @@
     "functional",
     "stateless"
   ],
+  "files": [
+    "build",
+    "dist"
+  ],
   "dependencies": {
     "hoist-non-react-statics": "^1.0.2",
     "object-assign": "*"
