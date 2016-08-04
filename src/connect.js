@@ -41,8 +41,8 @@ export default function connect(mapStateToProps) {
       }
 
       updateState() {
-        let propMap = this.propMap
-        let stateToSet = {}
+        const propMap = this.propMap
+        const stateToSet = {}
 
         for (let key in propMap) {
           const getter = propMap[key]
