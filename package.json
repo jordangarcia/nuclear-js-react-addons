@@ -4,6 +4,7 @@
   "description": "React addons for nuclear-js",
   "main": "build/index.js",
   "scripts": {
+    "babel:watch": "NODE_ENV=production babel src -w --out-dir build",
     "build": "scripts/build.sh",
     "prepublish": "npm run build",
     "test": "npm run lint && karma start --single-run",
