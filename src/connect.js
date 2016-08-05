@@ -13,7 +13,7 @@ export default function connect(mapStateToProps) {
       constructor(props, context) {
         super(props, context)
         this.reactor = props.reactor || context.reactor
-        this.unsubscribeFns = []
+        this.unsubscribeFn = null
         this.updatePropMap(props)
       }
 
@@ -41,8 +41,8 @@ export default function connect(mapStateToProps) {
       }
 
       updateState() {
-        let propMap = this.propMap
-        let stateToSet = {}
+        const propMap = this.propMap
+        const stateToSet = {}
 
         for (let key in propMap) {
           const getter = propMap[key]
@@ -53,26 +53,26 @@ export default function connect(mapStateToProps) {
       }
 
       subscribe() {
-        let propMap = this.propMap
-        for (let key in propMap) {
-          const getter = propMap[key]
-          const unsubscribeFn = this.reactor.observe(getter, val => {
-            this.setState({
-              [key]: val,
-            })
-          })
+        const propMap = this.propMap
+        const keys = Object.keys(propMap)
+        const getters = keys.map(k => propMap[k])
 
-          this.unsubscribeFns.push(unsubscribeFn)
-        }
+        // Add a final function to the getter to aggregate results in an array
+        getters.push((...vals) => vals)
+
+        this.unsubscribeFn = this.reactor.observe(getters, (vals) => {
+          const newState = vals.reduce((state, val, i) => {
+            state[keys[i]] = val
+            return state
+          }, {})
+
+          this.setState(newState)
+        })
       }
 
       unsubscribe() {
-        if (this.unsubscribeFns.length === 0) {
-          return
-        }
-
-        while (this.unsubscribeFns.length > 0) {
-          this.unsubscribeFns.shift()()
+        if (this.unsubscribeFn) {
+          this.unsubscribeFn()
         }
       }
 
