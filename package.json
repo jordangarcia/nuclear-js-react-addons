@@ -57,6 +57,7 @@
     "mocha-jsdom": "^1.0.0",
     "node-libs-browser": "^0.5.2",
     "nuclear-js": "^1.2.1",
+    "prop-types": "^15.5.10",
     "react": "^0.14.x",
     "react-addons-test-utils": "^0.14.3",
     "react-dom": "^0.14.3",
