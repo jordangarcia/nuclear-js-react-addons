@@ -2,12 +2,16 @@
 
 exports.__esModule = true;
 
-var _react = require('react');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-exports['default'] = _react.PropTypes.shape({
-  dispatch: _react.PropTypes.func.isRequired,
-  evaluate: _react.PropTypes.func.isRequired,
-  evaluateToJS: _react.PropTypes.func.isRequired,
-  observe: _react.PropTypes.func.isRequired
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+exports['default'] = _propTypes2['default'].shape({
+  dispatch: _propTypes2['default'].func.isRequired,
+  evaluate: _propTypes2['default'].func.isRequired,
+  evaluateToJS: _propTypes2['default'].func.isRequired,
+  observe: _propTypes2['default'].func.isRequired
 });
 module.exports = exports['default'];

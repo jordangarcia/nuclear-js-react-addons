@@ -2,7 +2,11 @@
 
 exports.__esModule = true;
 
-var _react = require('react');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
 
 /**
  * Iterate on an object
@@ -36,7 +40,7 @@ function getState(reactor, data) {
  */
 exports['default'] = {
   contextTypes: {
-    reactor: _react.PropTypes.object.isRequired
+    reactor: _propTypes2['default'].object.isRequired
   },
 
   getInitialState: function getInitialState() {

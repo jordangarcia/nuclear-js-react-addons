@@ -10,6 +10,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== 'function' 
 
 var _react = require('react');
 
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 var _reactorShape = require('./reactorShape');
 
 var _reactorShape2 = _interopRequireDefault(_reactorShape);
@@ -41,7 +45,7 @@ exports['default'] = Provider;
 
 Provider.propTypes = {
   reactor: _reactorShape2['default'].isRequired,
-  children: _react.PropTypes.element.isRequired
+  children: _propTypes2['default'].element.isRequired
 };
 
 Provider.childContextTypes = {
