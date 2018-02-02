@@ -1,6 +1,6 @@
 {
-  "name": "nuclear-js-react-addons",
-  "version": "0.4.1",
+  "name": "nuclear-js-react-addons-chefsplate",
+  "version": "1.0.1",
   "description": "React addons for nuclear-js",
   "main": "build/index.js",
   "scripts": {
@@ -16,12 +16,12 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jordangarcia/nuclear-js-react-addons/issues"
+    "url": "https://github.com/chefsplate/nuclear-js-react-addons/issues"
   },
-  "homepage": "https://github.com/jordangarcia/nuclear-js-react-addons",
+  "homepage": "https://github.com/chefsplate/nuclear-js-react-addons",
   "repository": {
     "type": "git",
-    "url": "git://github.com/jordangarcia/nuclear-js-react-addons"
+    "url": "git://github.com/chefsplate/nuclear-js-react-addons"
   },
   "keywords": [
     "flux",
@@ -57,7 +57,8 @@
     "mocha-jsdom": "^1.0.0",
     "node-libs-browser": "^0.5.2",
     "nuclear-js": "^1.2.1",
-    "react": "^0.14.x",
+    "prop-types": "^15.5.10",
+    "react": "^0.14.9",
     "react-addons-test-utils": "^0.14.3",
     "react-dom": "^0.14.3",
     "should": "^7.0.4",
@@ -65,6 +66,6 @@
     "webpack-dev-server": "^1.10.1"
   },
   "peerDependencies": {
-    "react": "^0.14 || ^15.0.0-rc || ^15.0.0"
+    "react": "^16.0.0"
   }
 }

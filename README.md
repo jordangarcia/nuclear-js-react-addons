@@ -1,5 +1,9 @@
 #NuclearJS addons for React
 
+This is a fork of https://github.com/jordangarcia/nuclear-js-react-addons, with support for React v16.
+
+---------------------------------------------------------------------------------------------------------
+
 Addons to quickly help you start up with [React](https://github.com/facebook/react) using [NuclearJS](https://github.com/optimizely/nuclear-js), inspired by [react-redux](https://github.com/rackt/react-redux).
 
 Provides NuclearJS `reactor` context via the `<Provider reactor={reactor} />` component and binds to getters via `connect` higher order component (or decorator).
@@ -7,7 +11,7 @@ Provides NuclearJS `reactor` context via the `<Provider reactor={reactor} />` co
 
 ## Install
 
-`npm install --save nuclear-js-react-addons`
+`npm install --save nuclear-js-react-addons-chefsplate`
 
 ```javascript
 // ES6
@@ -15,12 +19,12 @@ import {
   Provider,
   connect,
   nuclearMixin,
-} from 'nuclear-js-react-addons'
+} from 'nuclear-js-react-addons-chefsplate'
 ```
 
 ```javascript
 // ES5
-var NuclearAddons = require('nuclear-js-react-addons')
+var NuclearAddons = require('nuclear-js-react-addons-chefsplate')
 
 var Provider = NuclearAddons.Provider;
 var connect = NuclearAddons.connect;
@@ -64,7 +68,7 @@ Example using the decorator pattern:
 ```javascript
 import { Component } from 'react'
 import { getters } from './someModule';
-import { connect } from 'nuclear-js-react-addons';
+import { connect } from 'nuclear-js-react-addons-chefsplate';
 
 @connect(props => ({
   foo: getters.foo,
@@ -95,7 +99,7 @@ Or as a function
 ```javascript
 import { Component } from 'react'
 import { getters } from './someModule';
-import { connect } from 'nuclear-js-react-addons';
+import { connect } from 'nuclear-js-react-addons-chefsplate';
 
 class Child extends Component {
   render() {
@@ -130,7 +134,7 @@ export default ConnectedChild
 ### nuclearMixin
 
 ```javascript
-import { nuclearMixin } from 'nuclear-js-react-addons'
+import { nuclearMixin } from 'nuclear-js-react-addons-chefsplate'
 import someNuclearModule from './someModule'
 import someOtherNucModule from './someModule2'
 
@@ -185,9 +189,9 @@ elsewhere
 ```javascript
 var Nuclear = require('nuclear-js');
 var reactor = new Nuclear.Reactor();
-var provideReactor = require('nuclear-js-react-addons').provideReactor;
+var provideReactor = require('nuclear-js-react-addons-chefsplate').provideReactor;
 // or
-var provideReactor = require('nuclear-js-react-addons/provideReactor');
+var provideReactor = require('nuclear-js-react-addons-chefsplate/provideReactor');
 var App = require('./App');
 // Wrap your App into a Higher order Component => HoC
 var App = provideReactor(App);
@@ -217,7 +221,7 @@ If you prefer to stay away from mixin, there's also a nuclear component to suit 
 Example using the decorator pattern:
 ```javascript
 import { getters } from './someModule';
-import { nuclearComponent } from 'nuclear-js-react-addons';
+import { nuclearComponent } from 'nuclear-js-react-addons-chefsplate';
 
 @nuclearComponent((props) => {
     return {
@@ -248,7 +252,7 @@ class Child extends React.Component {
 or simply still using es5
 ```javascript
 var nuclearModule = require( './someModule');
-var nuclearComponent = require('nuclear-js-react-addons').nuclearComponent;
+var nuclearComponent = require('nuclear-js-react-addons-chefsplate').nuclearComponent;
 
 var Child = React.createClass({
     render: function() {
